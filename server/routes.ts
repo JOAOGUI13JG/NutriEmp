@@ -96,13 +96,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) return res.status(400).json({ message: "Invalid user ID format" });
     
-    const { date, startDate, endDate } = req.query;
-    
+    // Check if user exists first
     try {
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      
+      const { date, startDate, endDate } = req.query;
+      
       if (date) {
         // Get meals for a specific date
         const meals = await storage.getMealsByUserAndDate(userId, date as string);
-        res.status(200).json(meals);
+        return res.status(200).json(meals);
       } else if (startDate && endDate) {
         // Get meals for a date range
         const meals = await storage.getMealsByUserAndDateRange(
@@ -110,11 +114,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           startDate as string, 
           endDate as string
         );
-        res.status(200).json(meals);
+        return res.status(200).json(meals);
       } else {
-        res.status(400).json({ message: "Either date or startDate and endDate parameters are required" });
+        // If no parameters provided, return today's meals as a fallback
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+        const meals = await storage.getMealsByUserAndDate(userId, today);
+        return res.status(200).json(meals);
       }
     } catch (err) {
+      console.error("Error fetching meals:", err);
       res.status(500).json({ message: "Failed to fetch meals" });
     }
   });

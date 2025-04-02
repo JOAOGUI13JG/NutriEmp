@@ -48,6 +48,34 @@ export class MemStorage implements IStorage {
     this.currentFoodId = 1;
     this.currentContactMessageId = 1;
     
+    // Adicionar usuários padrão para teste
+    this.users.set(1, {
+      id: 1,
+      name: 'Usuário Teste',
+      age: 30,
+      weight: 75,
+      height: 175,
+      gender: 'male',
+      activityLevel: 'moderate',
+      dailyCalorieGoal: 2500,
+      createdAt: new Date()
+    });
+    
+    this.users.set(2, {
+      id: 2,
+      name: 'Segundo Usuário',
+      age: 25,
+      weight: 65,
+      height: 168,
+      gender: 'female',
+      activityLevel: 'active',
+      dailyCalorieGoal: 2300,
+      createdAt: new Date()
+    });
+    
+    // Manter o contador de ID atualizado
+    this.currentUserId = 3;
+    
     // Add some common foods to the database
     const commonFoods: InsertFood[] = [
       { name: 'Arroz Branco', quantity: 100, unit: 'g', protein: 2.7, carbs: 28.2, fat: 0.3 },

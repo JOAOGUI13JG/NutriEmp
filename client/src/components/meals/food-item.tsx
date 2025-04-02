@@ -68,7 +68,7 @@ export function FoodItem({
     if (field === 'name') {
       updatedFood.name = value as string;
     } else {
-      // Convert to number for numeric fields
+      // Convert to number for numeric fields, accepting decimal places
       const numericValue = typeof value === 'string' ? parseFloat(value) : value;
       
       // Use type assertion to assign the number value
@@ -79,7 +79,7 @@ export function FoodItem({
       }
       
       // Recalculate calories whenever a macro changes
-      if (field === 'protein' || field === 'carbs' || field === 'fat') {
+      if (field === 'protein' || field === 'carbs' || field === 'fat' || field === 'quantity') {
         updatedFood.calories = calculateCalories(
           updatedFood.protein || 0, 
           updatedFood.carbs || 0, 
