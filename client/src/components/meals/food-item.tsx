@@ -13,10 +13,24 @@ import { Button } from "@/components/ui/button";
 import { Food } from "@/types";
 import { calculateCalories } from "@/lib/utils/nutrition";
 
+// Define a FoodInput type for handling partial food data with appropriate types
+// Redefine FoodInput type to avoid TypeScript conflicts 
+// when assigning numeric values to optional properties
+type FoodInput = {
+  id?: number;
+  name?: string;
+  quantity?: number;
+  unit?: string;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  calories?: number;
+};
+
 interface FoodItemProps {
   index: number;
-  food: Partial<Food>;
-  onFoodChange: (index: number, food: Partial<Food>) => void;
+  food: FoodInput;
+  onFoodChange: (index: number, food: FoodInput) => void;
   onRemove: (index: number) => void;
   foodOptions?: Food[];
 }
@@ -49,14 +63,20 @@ export function FoodItem({
   }, [selectedFood, foodOptions, index, onFoodChange]);
 
   const handleInputChange = (field: keyof Food, value: string | number) => {
-    const updatedFood = { ...food };
+    const updatedFood: FoodInput = { ...food };
     
     if (field === 'name') {
       updatedFood.name = value as string;
     } else {
       // Convert to number for numeric fields
       const numericValue = typeof value === 'string' ? parseFloat(value) : value;
-      updatedFood[field] = !isNaN(numericValue) ? numericValue : 0;
+      
+      // Use type assertion to assign the number value
+      if (!isNaN(numericValue)) {
+        (updatedFood as any)[field] = numericValue;
+      } else {
+        (updatedFood as any)[field] = 0;
+      }
       
       // Recalculate calories whenever a macro changes
       if (field === 'protein' || field === 'carbs' || field === 'fat') {
@@ -123,7 +143,7 @@ export function FoodItem({
               <Input
                 type="number"
                 min="0"
-                step="1"
+                step="0.1"
                 value={food.quantity || ""}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
                 className="text-sm"
@@ -144,6 +164,10 @@ export function FoodItem({
                   <SelectItem value="ml">ml</SelectItem>
                   <SelectItem value="porção">porção</SelectItem>
                   <SelectItem value="unidade">unidade</SelectItem>
+                  <SelectItem value="colher">colher</SelectItem>
+                  <SelectItem value="fatia">fatia</SelectItem>
+                  <SelectItem value="xícara">xícara</SelectItem>
+                  <SelectItem value="copo">copo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -192,7 +216,9 @@ export function FoodItem({
       <CardFooter className="bg-slate-50 rounded-b-lg">
         <div className="w-full text-right">
           <p className="text-xs text-slate-500">Calorias calculadas</p>
-          <p className="font-medium">{food.calories || calculateCalories(food.protein || 0, food.carbs || 0, food.fat || 0)} kcal</p>
+          <p className="font-medium">
+            {(food.calories || calculateCalories(food.protein || 0, food.carbs || 0, food.fat || 0)).toFixed(2)} kcal
+          </p>
         </div>
       </CardFooter>
     </Card>

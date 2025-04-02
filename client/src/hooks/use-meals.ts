@@ -28,6 +28,9 @@ export function useMeals() {
   } = useQuery<Meal[]>({ 
     queryKey: [userId ? `/api/users/${userId}/meals` : null, { date: today }],
     enabled: !!userId,
+    staleTime: 30000, // Reduce refetching frequency to prevent constant flickering
+    refetchInterval: 60000, // Only refetch every minute
+    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
   });
 
   // Calculate daily summary from meals
@@ -54,6 +57,9 @@ export function useMeals() {
   } = useQuery<Meal[]>({ 
     queryKey: [userId ? `/api/users/${userId}/meals` : null, { startDate: weekStart, endDate: weekEnd }],
     enabled: !!userId,
+    staleTime: 30000, // Reduce refetching frequency
+    refetchInterval: 60000, // Only refetch every minute
+    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
   });
 
   // Group weekly meals by date
@@ -77,6 +83,8 @@ export function useMeals() {
     isLoading: isLoadingFoods, 
   } = useQuery<Food[]>({ 
     queryKey: ['/api/foods'],
+    staleTime: 60000, // Cache for longer since food data changes less frequently
+    refetchOnWindowFocus: false
   });
 
   // Add a new meal
