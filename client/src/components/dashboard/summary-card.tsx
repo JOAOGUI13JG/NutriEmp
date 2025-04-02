@@ -70,7 +70,6 @@ export function SummaryCard({ summary }: SummaryCardProps) {
           </div>
           <div className="flex justify-between text-xs text-slate-500 mt-1">
             <span>0%</span>
-            <span>{Math.round(caloriePercentage)}%</span>
             <span>100%</span>
           </div>
         </div>
@@ -97,7 +96,6 @@ export function SummaryCard({ summary }: SummaryCardProps) {
           </div>
           <div className="flex justify-between text-xs text-slate-500 mt-1">
             <span>0g</span>
-            <span>{Math.round(proteinPercentage)}%</span>
             <span>Meta</span>
           </div>
         </div>
@@ -124,7 +122,6 @@ export function SummaryCard({ summary }: SummaryCardProps) {
           </div>
           <div className="flex justify-between text-xs text-slate-500 mt-1">
             <span>0g</span>
-            <span>{Math.round(carbsPercentage)}%</span>
             <span>Meta</span>
           </div>
         </div>
@@ -151,7 +148,6 @@ export function SummaryCard({ summary }: SummaryCardProps) {
           </div>
           <div className="flex justify-between text-xs text-slate-500 mt-1">
             <span>0g</span>
-            <span>{Math.round(fatPercentage)}%</span>
             <span>Meta</span>
           </div>
         </div>

@@ -53,7 +53,7 @@ export function MealList({ meals }: MealListProps) {
         </div>
         <Button
           onClick={() => navigate("/add-meal")}
-          className="rounded-xl px-5 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-md flex items-center gap-2 font-medium transition-all duration-200 hover:shadow-lg"
+          className="rounded-xl px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white shadow-md flex items-center gap-2 font-medium transition-all duration-200 hover:shadow-lg text-base"
         >
           <i className="ri-add-line text-lg"></i> Adicionar
         </Button>
@@ -146,7 +146,7 @@ export function MealList({ meals }: MealListProps) {
             </p>
             <Button 
               onClick={() => navigate("/add-meal")}
-              className="rounded-full px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-md inline-flex items-center gap-2 font-medium transition-all duration-200 hover:shadow-lg"
+              className="rounded-full px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white shadow-md inline-flex items-center gap-2 font-medium transition-all duration-200 hover:shadow-lg text-base"
             >
               <i className="ri-add-circle-line text-xl"></i> Adicionar Primeira Refeição
             </Button>
@@ -166,13 +166,13 @@ export function MealList({ meals }: MealListProps) {
             </p>
           </div>
           <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
-            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50" onClick={() => navigate("/add-meal")}>
+            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50 text-amber-700 border-amber-200 font-medium" onClick={() => navigate("/add-meal")}>
               <i className="ri-cup-line mr-1 text-amber-500"></i> Café da Manhã
             </Button>
-            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50" onClick={() => navigate("/add-meal")}>
+            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50 text-orange-700 border-orange-200 font-medium" onClick={() => navigate("/add-meal")}>
               <i className="ri-restaurant-line mr-1 text-orange-500"></i> Almoço
             </Button>
-            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50" onClick={() => navigate("/add-meal")}>
+            <Button variant="outline" size="sm" className="bg-white shadow-sm hover:bg-primary-50 text-indigo-700 border-indigo-200 font-medium" onClick={() => navigate("/add-meal")}>
               <i className="ri-moon-clear-line mr-1 text-indigo-500"></i> Jantar
             </Button>
           </div>
