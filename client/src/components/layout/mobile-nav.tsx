@@ -8,12 +8,13 @@ export default function MobileNav() {
     { id: 'dashboard', label: 'Home', icon: 'ri-home-line', path: '/' },
     { id: 'add-meal', label: 'Adicionar', icon: 'ri-add-circle-line', path: '/add-meal' },
     { id: 'reports', label: 'Relatórios', icon: 'ri-bar-chart-line', path: '/reports' },
-    { id: 'profile', label: 'Perfil', icon: 'ri-user-line', path: '/profile' }
+    { id: 'profile', label: 'Perfil', icon: 'ri-user-line', path: '/profile' },
+    { id: 'contact', label: 'Contato', icon: 'ri-customer-service-line', path: '/contact' }
   ];
 
   return (
     <nav className="md:hidden bg-white border-t border-slate-200 fixed bottom-0 left-0 right-0 z-10">
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-5">
         {navItems.map((item) => (
           <button 
             key={item.id}
