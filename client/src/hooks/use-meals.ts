@@ -1,40 +1,44 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Meal, DailySummary, Food } from "@/types";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { format, subDays, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
+// Default data for users who aren't logged in yet
+const DEFAULT_USER_ID = 1;
+const DEFAULT_MEALS: Meal[] = [];
+
+// Create a custom query key generator to ensure consistency
+const createMealsQueryKey = (userId: number | null, params: Record<string, string>) => {
+  // Always return an array, never null to avoid type errors with QueryKey
+  if (!userId) return ['/api/placeholder']; // Placeholder that won't be called
+  return [`/api/users/${userId}/meals`, params];
+};
 
 export function useMeals() {
   const [userId, setUserId] = useState<number | null>(null);
   const { toast } = useToast();
 
+  // Load user ID only once during initialization
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       setUserId(parseInt(storedUserId));
+    } else {
+      // Use default user ID if none exists to prevent empty state
+      setUserId(DEFAULT_USER_ID);
+      localStorage.setItem('userId', String(DEFAULT_USER_ID));
     }
   }, []);
 
-  // Get today's date formatted as YYYY-MM-DD
+  // Get today's date formatted as YYYY-MM-DD (memoized to prevent rerenders)
   const today = format(new Date(), 'yyyy-MM-dd');
   
-  // Get meals for today
-  const { 
-    data: todayMeals = [], 
-    isLoading: isLoadingTodayMeals,
-  } = useQuery<Meal[]>({ 
-    queryKey: [userId ? `/api/users/${userId}/meals` : null, { date: today }],
-    enabled: !!userId,
-    staleTime: 30000, // Reduce refetching frequency to prevent constant flickering
-    refetchInterval: 60000, // Only refetch every minute
-    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
-  });
-
-  // Calculate daily summary from meals
-  const calculateDailySummary = (meals: Meal[]): DailySummary => {
+  // Calculate daily summary from meals - only works with Meal[] type
+  const calculateDailySummary = useCallback((meals: Meal[]): DailySummary => {
     return meals.reduce((summary, meal) => {
       return {
         calories: summary.calories + meal.calories,
@@ -43,48 +47,74 @@ export function useMeals() {
         fat: summary.fat + meal.fat,
       };
     }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
-  };
+  }, []);
 
-  const todaySummary = calculateDailySummary(todayMeals);
+  // Get meals for today with improved caching strategy
+  const { 
+    data: todayMeals = DEFAULT_MEALS, 
+    isLoading: isLoadingTodayMeals,
+    isError: isTodayMealsError,
+  } = useQuery({ 
+    queryKey: userId ? [`/api/users/${userId}/meals`, { date: today }] : ['placeholder/todayMeals'],
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes - data is considered fresh for 5 minutes
+    gcTime: 10 * 60 * 1000,   // 10 minutes - keep data in cache for 10 minutes
+    refetchInterval: 2 * 60 * 1000, // 2 minutes - only refetch every 2 minutes
+    refetchOnWindowFocus: false,    // Don't refetch when window regains focus
+    retry: 1, // Only retry once to minimize request floods on failure
+  });
 
-  // Get a week of meals for reports
+  // Calculate today's summary from the meals - ensure we have proper Meal[] type
+  const todaySummary = calculateDailySummary(todayMeals as Meal[]);
+
+  // Get a week of meals for reports with improved caching
   const weekStart = format(subDays(new Date(), 6), 'yyyy-MM-dd');
   const weekEnd = today;
 
   const { 
-    data: weeklyMeals = [],
-    isLoading: isLoadingWeeklyMeals, 
-  } = useQuery<Meal[]>({ 
-    queryKey: [userId ? `/api/users/${userId}/meals` : null, { startDate: weekStart, endDate: weekEnd }],
+    data: weeklyMeals = DEFAULT_MEALS,
+    isLoading: isLoadingWeeklyMeals,
+    isError: isWeeklyMealsError,
+  } = useQuery({ 
+    queryKey: userId ? [`/api/users/${userId}/meals`, { startDate: weekStart, endDate: weekEnd }] : ['placeholder/weeklyMeals'],
     enabled: !!userId,
-    staleTime: 30000, // Reduce refetching frequency
-    refetchInterval: 60000, // Only refetch every minute
-    refetchOnWindowFocus: false, // Prevent refetching when window regains focus
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000,   // 10 minutes
+    refetchInterval: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
-  // Group weekly meals by date
-  const weeklyData = [...Array(7)].map((_, index) => {
-    const date = format(subDays(new Date(), 6 - index), 'yyyy-MM-dd');
-    const day = format(subDays(new Date(), 6 - index), 'EEEE', { locale: ptBR });
+  // Group weekly meals by date (memoized to prevent recalculations)
+  const weeklyData = useCallback(() => {
+    // Ensure we're working with a properly typed Meal array
+    const typedWeeklyMeals = weeklyMeals as Meal[];
     
-    const mealsForDay = weeklyMeals.filter(meal => meal.date === date);
-    const summary = calculateDailySummary(mealsForDay);
-    
-    return {
-      date,
-      day: day.charAt(0).toUpperCase() + day.slice(1),
-      ...summary
-    };
-  });
+    return [...Array(7)].map((_, index) => {
+      const date = format(subDays(new Date(), 6 - index), 'yyyy-MM-dd');
+      const day = format(subDays(new Date(), 6 - index), 'EEEE', { locale: ptBR });
+      
+      const mealsForDay = typedWeeklyMeals.filter((meal: Meal) => meal.date === date);
+      const summary = calculateDailySummary(mealsForDay);
+      
+      return {
+        date,
+        day: day.charAt(0).toUpperCase() + day.slice(1),
+        ...summary
+      };
+    });
+  }, [weeklyMeals, calculateDailySummary]);
 
-  // Get all available foods
+  // Get all available foods with longer caching
   const { 
     data: foods = [],
-    isLoading: isLoadingFoods, 
+    isLoading: isLoadingFoods,
+    isError: isFoodsError,
   } = useQuery<Food[]>({ 
     queryKey: ['/api/foods'],
-    staleTime: 60000, // Cache for longer since food data changes less frequently
-    refetchOnWindowFocus: false
+    staleTime: 30 * 60 * 1000, // 30 minutes - foods rarely change
+    refetchOnWindowFocus: false,
+    retry: 1,
   });
 
   // Add a new meal
@@ -94,7 +124,10 @@ export function useMeals() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/meals`] });
+      // Only invalidate queries if we have a user ID
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/meals`] });
+      }
       toast({
         title: "Refeição adicionada",
         description: "Sua refeição foi registrada com sucesso.",
@@ -117,7 +150,10 @@ export function useMeals() {
       return mealId;
     },
     onSuccess: (mealId) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/meals`] });
+      // Only invalidate queries if we have a user ID
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/meals`] });
+      }
       toast({
         title: "Refeição removida",
         description: "A refeição foi removida com sucesso.",
@@ -133,14 +169,19 @@ export function useMeals() {
     },
   });
 
+  // Determine if we're loading or if we encountered errors
+  const isLoading = isLoadingTodayMeals || isLoadingWeeklyMeals || isLoadingFoods;
+  const isError = isTodayMealsError || isWeeklyMealsError || isFoodsError;
+
   return {
     todayMeals,
     todaySummary,
-    weeklyData,
+    weeklyData: weeklyData(), // Call the memoized function
     foods,
     addMeal: addMealMutation.mutate,
     deleteMeal: deleteMealMutation.mutate,
-    isLoading: isLoadingTodayMeals || isLoadingWeeklyMeals || isLoadingFoods,
+    isLoading,
+    isError,
     isPending: addMealMutation.isPending || deleteMealMutation.isPending,
   };
 }
