@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Food } from "@/types";
-import { calculateCalories } from "@/lib/utils/nutrition";
+import { calculateCalories, formatMacro } from "@/lib/utils/nutrition";
 
 // Define a FoodInput type for handling partial food data with appropriate types
 // Redefine FoodInput type to avoid TypeScript conflicts 
@@ -201,7 +201,7 @@ export function FoodItem({
               type="number"
               min="0"
               step="0.1"
-              value={food.protein || ""}
+              value={food.protein ? formatMacro(food.protein) : ""}
               onChange={(e) => handleInputChange("protein", e.target.value)}
               className="text-sm"
             />
@@ -213,7 +213,7 @@ export function FoodItem({
               type="number"
               min="0"
               step="0.1"
-              value={food.carbs || ""}
+              value={food.carbs ? formatMacro(food.carbs) : ""}
               onChange={(e) => handleInputChange("carbs", e.target.value)}
               className="text-sm"
             />
@@ -225,7 +225,7 @@ export function FoodItem({
               type="number"
               min="0"
               step="0.1"
-              value={food.fat || ""}
+              value={food.fat ? formatMacro(food.fat) : ""}
               onChange={(e) => handleInputChange("fat", e.target.value)}
               className="text-sm"
             />
@@ -237,7 +237,7 @@ export function FoodItem({
         <div className="w-full text-right">
           <p className="text-xs text-slate-500">Calorias calculadas</p>
           <p className="font-medium">
-            {(food.calories || calculateCalories(food.protein || 0, food.carbs || 0, food.fat || 0)).toFixed(2)} kcal
+            {formatMacro(food.calories || calculateCalories(food.protein || 0, food.carbs || 0, food.fat || 0))} kcal
           </p>
         </div>
       </CardFooter>

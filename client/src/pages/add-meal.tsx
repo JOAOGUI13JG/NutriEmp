@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FoodItem } from "@/components/meals/food-item";
 import { useMeals } from "@/hooks/use-meals";
 import { useUser } from "@/hooks/use-user";
-import { calculateMealTotals } from "@/lib/utils/nutrition";
+import { calculateMealTotals, formatMacro } from "@/lib/utils/nutrition";
 import { Food } from "@/types";
 
 export default function AddMeal() {
@@ -191,19 +191,19 @@ export default function AddMeal() {
               <div className="bg-slate-50 p-3 rounded-lg">
                 <div className="text-xs text-slate-500">Proteínas</div>
                 <div className="text-lg font-semibold">
-                  {mealTotals.protein}g
+                  {formatMacro(mealTotals.protein)}g
                 </div>
               </div>
               <div className="bg-slate-50 p-3 rounded-lg">
                 <div className="text-xs text-slate-500">Carboidratos</div>
                 <div className="text-lg font-semibold">
-                  {mealTotals.carbs}g
+                  {formatMacro(mealTotals.carbs)}g
                 </div>
               </div>
               <div className="bg-slate-50 p-3 rounded-lg">
                 <div className="text-xs text-slate-500">Gorduras</div>
                 <div className="text-lg font-semibold">
-                  {mealTotals.fat}g
+                  {formatMacro(mealTotals.fat)}g
                 </div>
               </div>
             </div>

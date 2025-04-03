@@ -2,6 +2,7 @@ import { Meal } from "@/types";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useMeals } from "@/hooks/use-meals";
+import { formatMacro } from "@/lib/utils/nutrition";
 
 interface MealListProps {
   meals: Meal[];
@@ -106,15 +107,15 @@ export function MealList({ meals }: MealListProps) {
                       <div className="text-xs text-slate-500">kcal</div>
                     </div>
                     <div className="bg-blue-50 p-2 rounded-lg text-center">
-                      <div className="text-sm font-semibold text-blue-700">{meal.protein}g</div>
+                      <div className="text-sm font-semibold text-blue-700">{formatMacro(meal.protein)}g</div>
                       <div className="text-xs text-slate-500">Proteína</div>
                     </div>
                     <div className="bg-amber-50 p-2 rounded-lg text-center">
-                      <div className="text-sm font-semibold text-amber-700">{meal.carbs}g</div>
+                      <div className="text-sm font-semibold text-amber-700">{formatMacro(meal.carbs)}g</div>
                       <div className="text-xs text-slate-500">Carbos</div>
                     </div>
                     <div className="bg-rose-50 p-2 rounded-lg text-center">
-                      <div className="text-sm font-semibold text-rose-700">{meal.fat}g</div>
+                      <div className="text-sm font-semibold text-rose-700">{formatMacro(meal.fat)}g</div>
                       <div className="text-xs text-slate-500">Gordura</div>
                     </div>
                   </div>
