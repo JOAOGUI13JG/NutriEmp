@@ -13,8 +13,8 @@ export default function MobileNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-20">
-      <div className="bg-white/80 backdrop-blur-md border border-slate-200/50 rounded-2xl overflow-hidden shadow-xl">
+    <nav className="md:hidden fixed bottom-2 left-4 right-4 z-20">
+      <div className="bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-2xl overflow-hidden shadow-xl">
         <div className="grid grid-cols-5 relative p-1">
           {/* Indicador animado de posição */}
           <div 

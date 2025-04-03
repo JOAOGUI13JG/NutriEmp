@@ -55,13 +55,13 @@ export function useMeals() {
     isLoading: isLoadingTodayMeals,
     isError: isTodayMealsError,
   } = useQuery({ 
-    queryKey: userId ? [`/api/users/${userId}/meals`, { date: today }] : ['placeholder/todayMeals'],
+    queryKey: userId ? [`/api/users/${userId}/meals`] : ['placeholder/todayMeals'],
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes - data is considered fresh for 5 minutes
     gcTime: 10 * 60 * 1000,   // 10 minutes - keep data in cache for 10 minutes
     refetchInterval: 2 * 60 * 1000, // 2 minutes - only refetch every 2 minutes
-    refetchOnWindowFocus: false,    // Don't refetch when window regains focus
-    retry: 1, // Only retry once to minimize request floods on failure
+    refetchOnWindowFocus: true,     // Refetch when window regains focus
+    retry: 2, // Retry twice on failure
   });
 
   // Calculate today's summary from the meals - ensure we have proper Meal[] type
@@ -76,13 +76,13 @@ export function useMeals() {
     isLoading: isLoadingWeeklyMeals,
     isError: isWeeklyMealsError,
   } = useQuery({ 
-    queryKey: userId ? [`/api/users/${userId}/meals`, { startDate: weekStart, endDate: weekEnd }] : ['placeholder/weeklyMeals'],
+    queryKey: userId ? [`/api/users/${userId}/meals`] : ['placeholder/weeklyMeals'],
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000,   // 10 minutes
     refetchInterval: 2 * 60 * 1000, // 2 minutes
-    refetchOnWindowFocus: false,
-    retry: 1,
+    refetchOnWindowFocus: true,
+    retry: 2,
   });
 
   // Group weekly meals by date (memoized to prevent recalculations)

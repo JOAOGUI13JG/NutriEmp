@@ -79,7 +79,7 @@ export default function AddMeal() {
   const mealTotals = calculateMealTotals(mealForm.foods as Food[]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6 pb-16 md:pb-0">
+    <div className="max-w-4xl mx-auto p-4 space-y-6 pb-24 md:pb-0">
       <PageHeader 
         title="Adicionar Refeição" 
         showBackButton 
