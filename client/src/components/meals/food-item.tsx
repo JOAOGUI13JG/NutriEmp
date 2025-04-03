@@ -49,18 +49,25 @@ export function FoodItem({
     if (selectedFood && foodOptions.length > 0) {
       const foundFood = foodOptions.find(f => f.name === selectedFood);
       if (foundFood) {
+        // Preserve the current quantity if it exists, otherwise use the default
+        const currentQuantity = food.quantity !== undefined ? food.quantity : foundFood.quantity;
+        
+        // Calculate macros based on the current quantity proportion
+        const quantityRatio = currentQuantity / foundFood.quantity;
+        
         onFoodChange(index, {
           name: foundFood.name,
-          quantity: foundFood.quantity,
+          quantity: currentQuantity,
           unit: foundFood.unit,
-          protein: foundFood.protein,
-          carbs: foundFood.carbs,
-          fat: foundFood.fat,
-          calories: foundFood.calories
+          // Scale the nutritional values according to the quantity
+          protein: foundFood.protein * quantityRatio,
+          carbs: foundFood.carbs * quantityRatio,
+          fat: foundFood.fat * quantityRatio,
+          calories: foundFood.calories * quantityRatio
         });
       }
     }
-  }, [selectedFood, foodOptions, index, onFoodChange]);
+  }, [selectedFood, foodOptions, index, onFoodChange, food.quantity]);
 
   const handleInputChange = (field: keyof Food, value: string | number) => {
     const updatedFood: FoodInput = { ...food };
@@ -78,8 +85,21 @@ export function FoodItem({
         (updatedFood as any)[field] = 0;
       }
       
-      // Recalculate calories whenever a macro changes
-      if (field === 'protein' || field === 'carbs' || field === 'fat' || field === 'quantity') {
+      // For quantity changes, recalculate all macros if we have a selected food
+      if (field === 'quantity' && selectedFood) {
+        const foundFood = foodOptions.find(f => f.name === selectedFood);
+        if (foundFood && numericValue > 0) {
+          // Calculate ratio of new quantity to original food quantity
+          const quantityRatio = numericValue / foundFood.quantity;
+          
+          // Update all nutritional values based on the ratio
+          updatedFood.protein = foundFood.protein * quantityRatio;
+          updatedFood.carbs = foundFood.carbs * quantityRatio;
+          updatedFood.fat = foundFood.fat * quantityRatio;
+          updatedFood.calories = foundFood.calories * quantityRatio;
+        }
+      } else if (field === 'protein' || field === 'carbs' || field === 'fat') {
+        // For direct edits to macros, just recalculate calories
         updatedFood.calories = calculateCalories(
           updatedFood.protein || 0, 
           updatedFood.carbs || 0, 
