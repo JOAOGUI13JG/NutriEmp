@@ -180,7 +180,6 @@ export default function Reports() {
                   <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Carboidratos</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Gorduras</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Meta</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Deficit</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
@@ -192,10 +191,6 @@ export default function Reports() {
                     <td className="px-4 py-3 whitespace-nowrap text-sm">{formatMacro(day.carbs)}g</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm">{formatMacro(day.fat)}g</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm">{user?.dailyCalorieGoal || 2000} kcal</td>
-                    <td className={`px-4 py-3 whitespace-nowrap text-sm ${getDeficitColor((user?.dailyCalorieGoal || 2000) - day.calories)}`}>
-                      {(user?.dailyCalorieGoal || 2000) - day.calories > 0 ? '-' : '+'}
-                      {Math.abs((user?.dailyCalorieGoal || 2000) - day.calories)} kcal
-                    </td>
                   </tr>
                 ))}
               </tbody>
