@@ -26,12 +26,17 @@ export interface IStorage {
   
   // Contact operations
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
+  
+  // Storage properties for debugging
+  meals: Map<number, Meal>;
+  users: Map<number, User>;
+  foods: Map<number, Food>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private meals: Map<number, Meal>;
-  private foods: Map<number, Food>;
+  public users: Map<number, User>;
+  public meals: Map<number, Meal>;
+  public foods: Map<number, Food>;
   private contactMessages: Map<number, ContactMessage>;
   private currentUserId: number;
   private currentMealId: number;
@@ -143,6 +148,9 @@ export class MemStorage implements IStorage {
   async createMeal(meal: InsertMeal): Promise<Meal> {
     const id = this.currentMealId++;
     
+    // Debug
+    console.log(`Creating meal with ID: ${id}, userId: ${meal.userId}, date: ${meal.date}, name: ${meal.name}`);
+    
     // Calculate total calories based on macros
     const calories = meal.foods.reduce((total, food) => {
       return total + (food.protein * 4 + food.carbs * 4 + food.fat * 9);
@@ -151,11 +159,18 @@ export class MemStorage implements IStorage {
     const newMeal: Meal = {
       ...meal,
       id,
-      calories,
+      calories: Math.round(calories),
       createdAt: new Date()
     };
     
     this.meals.set(id, newMeal);
+    
+    // Debug: list all meals after adding
+    console.log(`Total meals after adding: ${this.meals.size}`);
+    console.log(`Meals for user ${meal.userId}: ${Array.from(this.meals.values()).filter(m => m.userId === meal.userId).length}`);
+    console.log(`Today's meals for user ${meal.userId}: ${Array.from(this.meals.values())
+      .filter(m => m.userId === meal.userId && m.date === meal.date).length}`);
+    
     return newMeal;
   }
 

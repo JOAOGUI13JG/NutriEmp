@@ -103,9 +103,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { date, startDate, endDate } = req.query;
       
+      console.log(`GET /api/users/${userId}/meals - Query params:`, { date, startDate, endDate });
+      
+      // Get all meals from user - simpler approach to debug
+      const allUserMeals = Array.from(storage.meals.values())
+        .filter(meal => meal.userId === userId);
+      
+      console.log(`Found ${allUserMeals.length} meals for user ${userId}`);
+      
+      if (allUserMeals.length > 0) {
+        console.log('First meal:', {
+          id: allUserMeals[0].id,
+          userId: allUserMeals[0].userId,
+          date: allUserMeals[0].date,
+          name: allUserMeals[0].name
+        });
+      }
+      
       if (date) {
         // Get meals for a specific date
         const meals = await storage.getMealsByUserAndDate(userId, date as string);
+        console.log(`Found ${meals.length} meals for user ${userId} on date ${date}`);
         return res.status(200).json(meals);
       } else if (startDate && endDate) {
         // Get meals for a date range
@@ -114,12 +132,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           startDate as string, 
           endDate as string
         );
+        console.log(`Found ${meals.length} meals for user ${userId} from ${startDate} to ${endDate}`);
         return res.status(200).json(meals);
       } else {
-        // If no parameters provided, return today's meals as a fallback
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-        const meals = await storage.getMealsByUserAndDate(userId, today);
-        return res.status(200).json(meals);
+        // If no parameters provided, return all user meals to help debug
+        console.log(`Returning all ${allUserMeals.length} meals for user ${userId}`);
+        return res.status(200).json(allUserMeals);
       }
     } catch (err) {
       console.error("Error fetching meals:", err);
