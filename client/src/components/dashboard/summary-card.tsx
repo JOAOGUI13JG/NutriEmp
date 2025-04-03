@@ -1,6 +1,6 @@
 import { DailySummary } from "@/types";
 import { useUser } from "@/hooks/use-user";
-import { calculateCalorieDeficit, getDeficitColor } from "@/lib/utils/nutrition";
+import { calculateCalorieDeficit, getDeficitColor, formatMacro } from "@/lib/utils/nutrition";
 
 interface SummaryCardProps {
   summary: DailySummary;
@@ -83,7 +83,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
             <div>
               <div className="text-sm font-medium text-blue-600">Proteínas</div>
               <div className="flex items-end">
-                <span className="text-2xl font-bold">{summary.protein}</span>
+                <span className="text-2xl font-bold">{formatMacro(summary.protein)}</span>
                 <span className="text-sm text-slate-500 ml-1">g</span>
               </div>
             </div>
@@ -109,7 +109,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
             <div>
               <div className="text-sm font-medium text-amber-600">Carboidratos</div>
               <div className="flex items-end">
-                <span className="text-2xl font-bold">{summary.carbs}</span>
+                <span className="text-2xl font-bold">{formatMacro(summary.carbs)}</span>
                 <span className="text-sm text-slate-500 ml-1">g</span>
               </div>
             </div>
@@ -135,7 +135,7 @@ export function SummaryCard({ summary }: SummaryCardProps) {
             <div>
               <div className="text-sm font-medium text-rose-600">Gorduras</div>
               <div className="flex items-end">
-                <span className="text-2xl font-bold">{summary.fat}</span>
+                <span className="text-2xl font-bold">{formatMacro(summary.fat)}</span>
                 <span className="text-sm text-slate-500 ml-1">g</span>
               </div>
             </div>
