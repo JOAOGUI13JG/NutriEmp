@@ -153,16 +153,16 @@ export function SummaryCard({ summary }: SummaryCardProps) {
         </div>
       </div>
 
-      {/* Deficit summary - Modern Style */}
+      {/* Simplified summary - Modern Style */}
       <div className="mt-8 relative">
         <div className="flex items-center mb-5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center shadow-sm mr-2">
             <i className="ri-scales-3-line text-lg"></i>
           </div>
-          <h3 className="text-lg font-bold text-primary-900">Balanço Calórico</h3>
+          <h3 className="text-lg font-bold text-primary-900">Balanço Diário</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="bg-white/80 backdrop-blur-sm p-5 rounded-xl shadow-sm border border-slate-100 flex items-center">
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-blue-600 mr-4">
               <i className="ri-flag-2-fill text-xl"></i>
@@ -178,25 +178,8 @@ export function SummaryCard({ summary }: SummaryCardProps) {
               <i className="ri-restaurant-fill text-xl"></i>
             </div>
             <div>
-              <div className="text-sm font-medium text-slate-500">Consumido</div>
+              <div className="text-sm font-medium text-slate-500">Consumido Hoje</div>
               <div className="text-2xl font-bold text-amber-700">{summary.calories} <span className="text-sm font-normal text-slate-500">kcal</span></div>
-            </div>
-          </div>
-          
-          <div className="bg-white/80 backdrop-blur-sm p-5 rounded-xl shadow-sm border border-slate-100 flex items-center">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${
-              calorieDeficit < 0 
-                ? 'bg-gradient-to-br from-green-50 to-green-100 text-green-600' 
-                : 'bg-gradient-to-br from-rose-50 to-rose-100 text-rose-600'
-            }`}>
-              <i className={`${calorieDeficit < 0 ? 'ri-arrow-down-fill' : 'ri-arrow-up-fill'} text-xl`}></i>
-            </div>
-            <div>
-              <div className="text-sm font-medium text-slate-500">Déficit/Excesso</div>
-              <div className={`text-2xl font-bold ${getDeficitColor(calorieDeficit)}`}>
-                {calorieDeficit < 0 ? '-' : '+'}
-                {Math.abs(calorieDeficit)} <span className="text-sm font-normal text-slate-500">kcal</span>
-              </div>
             </div>
           </div>
         </div>
